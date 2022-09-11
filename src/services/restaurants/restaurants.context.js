@@ -5,41 +5,39 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { LocationContext } from "../location/location.context";
+
 import {
   restaurantsRequest,
   restaurantsTransform,
 } from "./restaurants.service";
 
+import { LocationContext } from "../location/location.context";
+
 export const RestaurantsContext = createContext();
 
 export const RestaurantsContextProvider = ({ children }) => {
-  const { location } = useContext(LocationContext);
   const [restaurants, setRestaurants] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { location } = useContext(LocationContext);
 
-  const retrieveRestaurants = (currentLocation) => {
+  const retrieveRestaurants = (loc) => {
     setIsLoading(true);
-    console.log("set restaurants");
-    console.log(currentLocation);
     setRestaurants([]);
 
     setTimeout(() => {
-      restaurantsRequest(currentLocation)
+      restaurantsRequest(loc)
         .then(restaurantsTransform)
-        .then((result) => {
+        .then((results) => {
           setIsLoading(false);
-          setRestaurants(result);
+          setRestaurants(results);
         })
-        .catch((result) => {
+        .catch((err) => {
           setIsLoading(false);
-          console.log(result);
-          setError(result);
+          setError(err);
         });
     }, 2000);
   };
-
   useEffect(() => {
     if (location) {
       const locationString = `${location.lat},${location.lng}`;
